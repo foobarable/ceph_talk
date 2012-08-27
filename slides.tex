@@ -35,7 +35,6 @@
 \usepackage{amsthm}
 \usepackage{wasysym}
 \usepackage{ucs}
-\usepackage{listings}
 \usepackage{stmaryrd}
 \usepackage{hyperref}
 \usepackage{graphics}
@@ -44,31 +43,36 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage{listings}
 
 
 
-\tikzstyle{every picture}+=[remember picture]
-\usetikzlibrary{arrows}
-\usetikzlibrary{shadows}
-\usetikzlibrary{fit}
-\usetikzlibrary{shapes}
-\usetikzlibrary{backgrounds}
-
-\tikzstyle{vertex}=[circle,fill=black!25,minimum size=12pt,inner sep=0pt]
-\tikzstyle{selected vertex} = [vertex, fill=red!24]
-\tikzstyle{blue selected vertex} = [vertex, fill=blue!25]
-\tikzstyle{edge} = [draw,thick,-]
-\tikzstyle{weight} = [font=\small]
-\tikzstyle{selected edge} = [draw,line width=5pt,-,red!50]
-\tikzstyle{ignored edge} = [draw,line width=5pt,-,black!20]
-\tikzstyle{small vertex}=[circle,fill=black!25,minimum size=8pt, inner sep=0pt]
-\tikzstyle{small selected vertex}=[circle,fill=red!25,minimum size=8pt, inner sep=0pt]
-
-
-
-
-
-
+ 
+\lstset{ %
+  basicstyle=\tiny,           % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line 
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},      % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                   % show the filename of files included with \lstinputlisting;
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},          % keyword style
+  commentstyle=\color{dkgreen},       % comment style
+  stringstyle=\color{mauve},         % string literal style
+  escapeinside={\%*}{*)},            % if you want to add LaTeX within your code
+  morekeywords={*,...}               % if you want to add more keywords to the set
+}
 
 \title{Das verteilte Filesystem Ceph als Storage-Lösung}
 \subtitle{ }
@@ -147,7 +151,7 @@
 	%			\item Ausfalltoleranz (Verf\"ugbarkeit und Zuverl\"assigkeit) durch Replikation
 	%			\item Hohe Performanz durch Striping %Aufteilen der Daten auf mehrere physikalische Devices
 	%		\end{itemize}
-		\item <2> Buzzword: \glqq Private Cloud\grqq
+		\item <2> \glqq Private Cloud\grqq ;)
 	\end{itemize}
 
 \end{frame}
@@ -231,6 +235,28 @@
 
 \section{Ceph - Theorie}
 \subsection*{}
+
+\begin{frame}
+	\begin{center}
+	\Large{Ceph}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Ceph - \"Ubersicht}
+	
+	Drei Komponenten:
+	\begin{itemize}
+		\item Client: Posix\"ahnliche Schnittstelle %Stellt zur verfuegung
+		\item OSD Cluster: Speichert Daten und Metadaten
+		\item Metadaten Cluster
+			\begin{itemize}
+				\item Verwaltet Namensraum
+				\item Konsistenz/Koh\"arenz
+				\item Sicherheit (Noch nicht ausreichend implementiert)
+			\end{itemize}
+	\end{itemize}
+\end{frame}
+
 \begin{frame}
 	\begin{center}
 		\includegraphics{ceph_architecture.pdf}
@@ -239,16 +265,107 @@
 \end{frame}
 
 
-\begin{frame}
-
-\end{frame}
-
-
 \section{Ceph - Praxis}
 \subsection*{}
+
 \begin{frame}
+	\begin{center}
+	\Large{Ceph Praxis}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Vorraussetzungen}
+	\begin{itemize}
+		\item Ausgeschaltetes Write Caching auf der Festplatte
+		\item Dateisystem mit \emph{Extended Attributes (XATTRs)}:
+		\begin{itemize}
+			\item XFS
+			\item BTRFS
+%			\item Internet Status der Objekte
+%			\item Snapshot Metadaten
+%			\item RADOS Gateway Access Control Lists (ACLs).
+		\end{itemize}
+		\item Empfohlen: Disk f\"ur je OS/Ceph
+
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Installation}
+
+	Einfach, Pakete vorhanden f\"ur:
+	\begin{itemize}
+		\item Ubuntu
+		\begin{itemize}
+			\item natty
+			\item oneiric
+			\item precise
+		\end{itemize}
+		\item Debian
+		\begin{itemize}
+			\item sid
+			\item squeeze
+			\item wheezy
+		\end{itemize}
+		\item RPM 
+		\begin{itemize}
+			\item Selbst bauen per \texttt{rpmbuild}
+		\end{itemize}
+	\end{itemize}
 
 \end{frame}
+
+
+\begin{frame}[fragile]{Example ceph.conf}
+
+\begin{lstlisting}
+;This is a comment
+[global]
+	auth supported = cephx
+[osd]
+	osd journal size = 1000
+[mon.a]
+	host = myserver01
+	mon addr = 10.0.0.101:6789
+[mon.b]
+	host = myserver02
+	mon addr = 10.0.0.102:6789
+[mon.c]
+	host = myserver03
+	mon addr = 10.0.0.103:6789
+[osd.0]
+	host = myserver01
+[osd.1]
+	host = myserver02
+[osd.2]
+	host = myserver03
+[mds.a]
+	host = myserver01
+\end{lstlisting}
+\end{frame}
+
+
+
+\begin{frame}{Deployment}
+	\begin{itemize}
+		\item Chef cloud management tool (nicht getestet)
+		\item \textbf{mkcephfs} (f\"ur Testzwecke)
+			\begin{enumerate}
+				\item Ben\"otigt passwortlosen \texttt{root}-Login auf allen Hosts
+				\item Kopieren der ceph.conf auf alle Hosts
+				\item Erstellen der Standardordner z.B. f\"ur myserver03
+				\begin{description}
+					\item \texttt{mkdir /var/lib/ceph/osd/ceph-2}
+					\item \texttt{mkdir /var/lib/ceph/mon/ceph-c}
+				\end{description}
+				\item \texttt{mkcephfs -a -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.keyring}
+			\end{enumerate}
+	\end{itemize}
+\end{frame}
+
+
 
 \section{Fragen}
 \subsection*{}
@@ -261,6 +378,8 @@
 	\includegraphics[scale=0.8]{questions.jpg}
 	\end{center}
 \end{frame}
+
+
 
 \begin{frame}{Literatur}
 	\bibliographystyle{apalike}
