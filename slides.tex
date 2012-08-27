@@ -90,67 +90,103 @@
 \section{Einf\"uhrung}
 \subsection*{}
 
+\begin{frame}{Motivation}
+
+\begin{itemize}
+	\item Institut f\"ur Numerische und Angwandte Mathematik
+	\item \textasciitilde 50 Mitarbeiter
+	\item Hardware: 10 inhomogene Server
+	\item Kein SAN
+	\item Dienste (schon teilweise virtualisiert)
+	\begin{itemize}
+		\item Fileserver
+		\item Webserver
+		\item Email \& Groupware
+		\item Jabber
+		\item Diverse Lizenzserver
+		\item Versionsverwaltung (svn, git, hg)
+		\item ...
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Probleme}
+
+	\begin{itemize}
+		\item Fileserver
+			\begin{itemize}
+				\item Dateisystem: ZFS 
+				\item Netzwerkdateisystem: NFS
+				\item \glqq Hot spare Replikation\grqq 
+				\item $\Rightarrow$ Nadel\"ohr
+			\end{itemize} 
+		\item <2> Restliche Server
+			\begin{itemize}
+				\item Unbenutzte Speicherkapazit\"at
+				\item Unbenutzte Rechenapazit\"at
+				\item Unzureichende Verf\"ugbarkeit bei Fehlern
+			\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Fileserver Availability}
+	\begin{center}
+	\includegraphics[width=0.65\textwidth]{availabilitysuitenew.jpg}
+	\end{center}
+	\small
+	Quelle: \texttt{http://hub.opensolaris.org/bin/view/Project+avs/}
+\end{frame}
+
+
+\begin{frame}{L\"osungsansatz}
+	
+	\begin{itemize}
+		\item Jeder Server wird Hypervisor
+		\item Verteiltes Dateisystem 
+	%		\begin{itemize}
+	%			\item Ausfalltoleranz (Verf\"ugbarkeit und Zuverl\"assigkeit) durch Replikation
+	%			\item Hohe Performanz durch Striping %Aufteilen der Daten auf mehrere physikalische Devices
+	%		\end{itemize}
+		\item <2> Buzzword: \glqq Private Cloud\grqq
+	\end{itemize}
+
+\end{frame}
+
 \begin{frame}{Definition}
-%	\begin{block}{Definition}
 		In computing, a distributed file system or network file system is any file system that allows access to files from multiple hosts via a computer network.$[1]$
-%	\end{block}
 	\tiny{$[1]$ Galvin Silberschatz (1994). Operating System concepts, chapter 17 Distributed file systems. Addison-Wesley Publishing Company.} \\ 
 \end{frame}
 
 \begin{frame}{Nichts neues...}
 
 		z.B. NFS, entwickelt von Sun Microsystems in 1984
-%		\begin{block}{NFS}
+		\begin{center}
+			\includegraphics[scale=0.2]{nfs.pdf}
+		\end{center}
 		\begin{itemize}
 			\item Schlechte Performanz bei vielen Clients \\ $\Rightarrow$ Skaliert nicht
 			\item Keine Fehlertoleranz
 		\end{itemize}
-%	\end{block}
 \end{frame}
-
 
 
 
 \begin{frame}{Anforderungen an ein modernes, verteiltes Dateisystem}
 %	\begin{block}{Anforderungen}
 	\begin{itemize}
-		\item Performanz
+		\item Hohe Performanz durch Striping
 			\begin{itemize}
 				\item Durchsatz
 				\item Latenz
 			\end{itemize}
 		\item Skalierbarkeit
-		\item Zuverl\"assigkeit
 		\item Verf\"ugbarkeit
+		\item Zuverl\"assigkeit
 	\end{itemize}
 %	\end{block}
 \end{frame}
 
-
-\begin{frame}{Moderner Ansatz}
-	\begin{itemize}
-		\item Objektbasiert
-		\item Festplatten $\rightarrow$ Intelligent object storage devices (OSD's)
-		\begin{description}
-			\item CPU
-			\item Netzwerkschnittstelle
-			\item Lokaler Cache
-		\end{description}
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Typischer Zugriff}
-	%Bild seite 308
-	Bild seite 308
-\end{frame}
-
-
-\begin{frame}
-
-\end{frame}
-
-\begin{frame}
-	\frametitle{Zuverl\"assigkeit}
+\begin{frame}{Zuverl\"assigkeit/Verf\"ugbarkeit}
 	Problem: Fehler sind mehr die Norm als die Ausnahme
 	\begin{itemize}
 		\item System g\"unstiger Hardware
@@ -168,9 +204,41 @@
 	\end{itemize}		
 \end{frame}
 
+\begin{frame}{Moderner Ansatz}
+	\begin{itemize}
+		\item Objektbasiert
+		\item Festplatten $\rightarrow$ Intelligent object storage devices (OSD's)
+		\begin{itemize}
+			\item CPU
+			\item Netzwerkschnittstelle
+			\item Lokaler Cache
+		\end{itemize}
+		\item Metadaten getrennt von Nutzdaten
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Typischer Zugriff (z.B. Hadoop)}
+	\begin{center}
+	\includegraphics[scale=0.2]{hdfsarchitecture.jpg}
+	\end{center}
+	\small
+	Quelle: \texttt{http://hadoop.apache.org/common/docs/r0.20.2/hdfs\_design.html}
+\end{frame}
+
+
+
 
 \section{Ceph - Theorie}
 \subsection*{}
+\begin{frame}
+	\begin{center}
+		\includegraphics{ceph_architecture.pdf}
+	\end{center}
+	Quelle: \cite{weil2006}
+\end{frame}
+
+
 \begin{frame}
 
 \end{frame}
