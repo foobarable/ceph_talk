@@ -314,10 +314,24 @@
 \end{frame}
 
 \begin{frame}{Client Synchronisierung}
+	Problem: Mehrere Clients schreiben lesen eine Datei gleichzeitig.
+
+	\begin{itemize}	
+		\item Kein read caching/write buffering mehr
+		\item I/O der clients synchron %blocked until acked
+			\begin{itemize}
+				\item Schlechte Performanz bei kleinen reads/writes
+			\end{itemize}
+		\item HPC Erweiterung: O\_LAZY Flag f\"ur \texttt{open}
+	\end{itemize}
 \end{frame}
 
 
-\begin{frame}{Replikation}
+\begin{frame}{CRUSH}
+	\begin{center}
+	\includegraphics{crush.pdf}
+	\end{center}
+	Quelle: \cite{weil2006}
 \end{frame}
 
 \section{Ceph - Praxis}
@@ -421,6 +435,9 @@
 \end{frame}
 
 
+
+\begin{frame}{Zugriff}
+\end{frame}
 
 \section{Fragen}
 \subsection*{}
