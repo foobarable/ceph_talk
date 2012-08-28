@@ -176,7 +176,6 @@
 
 
 \begin{frame}{Anforderungen an ein modernes, verteiltes Dateisystem}
-%	\begin{block}{Anforderungen}
 	\begin{itemize}
 		\item Hohe Performanz durch Striping
 			\begin{itemize}
@@ -187,7 +186,6 @@
 		\item Verf\"ugbarkeit
 		\item Zuverl\"assigkeit
 	\end{itemize}
-%	\end{block}
 \end{frame}
 
 \begin{frame}{Zuverl\"assigkeit/Verf\"ugbarkeit}
@@ -231,6 +229,19 @@
 \end{frame}
 
 
+\begin{frame}{Weitere verteilte Dateisysteme}
+	\begin{center}
+		\begin{tabular}{|c|c|}
+		\hline
+		Dateisystem & Bemerkung \\
+		\hline
+		Lustre & Alter Kernel \\
+		Google File System & Propriet\"ar, ausgelegt auf große Dateien \\
+		GlusterFS & \\
+		\hline
+	\end{tabular}
+	\end{center}
+\end{frame}
 
 
 \section{Ceph - Theorie}
@@ -264,6 +275,50 @@
 	Quelle: \cite{weil2006}
 \end{frame}
 
+
+\begin{frame}{Design Features}
+	\begin{itemize}
+		\item Trennung der Verwaltung von Daten und Metadaten
+		\begin{itemize}
+			\item Unabhaengige Skalierbarkeit
+			\item Keine Block/Objektlisten (CRUSH)
+		\end{itemize}
+		\item  Dynamische Verteilung der Metadaten
+		\begin{itemize}
+			\item Halber Aufwand sind Metadatenoperationen
+			\item Gutes Loadbalancing der Metadaten ist \"außerst wichtig %fuer performance
+		\end{itemize}
+		\item Autonomes OSD Cluster verantwortlich f\"ur:
+			\begin{itemize}
+				\item Replikation
+				\item Fehlererkennung
+				\item Wiederherstellung nach Fehlern
+			\end{itemize}
+	\end{itemize}	
+\end{frame}
+
+\begin{frame}{Dateizugriff}
+
+\begin{enumerate}
+	\item Client sendet Dateirequest an das MDS Cluster
+	\item Ein MDS \"ubersetzt Dateiname in \textit{file inode}
+	\begin{itemize}
+		\item Unique inode number
+		\item Besitzer
+		\item Gr\"oße
+		\item ...
+	\end{itemize}
+	\item MDS gibt inode number, Gr\"oße und Verteilungsstrategie zur\"uck
+	\item Direkter Zugriff von Client auf OSD
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Client Synchronisierung}
+\end{frame}
+
+
+\begin{frame}{Replikation}
+\end{frame}
 
 \section{Ceph - Praxis}
 \subsection*{}
@@ -371,7 +426,7 @@
 \subsection*{}
 \begin{frame}
 	\begin{center}
-	\large Questions?
+	\large Fragen?
 	\end{center}
 	
 	\begin{center}
