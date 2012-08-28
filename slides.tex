@@ -42,7 +42,7 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage{tikz}
-\usepackage[numbers,sort&compress]{natbib}
+%\usepackage[sort&compress]{natbib}
 \usepackage{listings}
 
 
@@ -237,7 +237,7 @@
 		\hline
 		Lustre & Alter Kernel \\
 		Google File System & Propriet\"ar, ausgelegt auf große Dateien \\
-		GlusterFS & \\
+		GlusterFS & Nur FUSE, Alternative? Meinungen?\\
 		\hline
 	\end{tabular}
 	\end{center}
@@ -320,9 +320,9 @@
 		\item Kein read caching/write buffering mehr
 		\item I/O der clients synchron %blocked until acked
 			\begin{itemize}
-				\item Schlechte Performanz bei kleinen reads/writes
+				\item Synchrone I/O schlecht f\"ur Client Performanz
 			\end{itemize}
-		\item HPC Erweiterung: O\_LAZY Flag f\"ur \texttt{open}
+		\item HPC Erweiterung: O\_LAZY flag f\"ur \texttt{open}
 	\end{itemize}
 \end{frame}
 
@@ -330,8 +330,7 @@
 \begin{frame}{CRUSH}
 	\begin{center}
 	\includegraphics{crush.pdf}
-	\end{center}
-	Quelle: \cite{weil2006}
+\end{center}
 \end{frame}
 
 \section{Ceph - Praxis}
@@ -387,7 +386,69 @@
 \end{frame}
 
 
-\begin{frame}[fragile]{Example ceph.conf}
+\begin{frame}{Cluster Design}
+	3 Daemons
+	\begin{itemize}
+		\item ceph-osd: Object Storage
+		\item ceph-mds: Metadaten Server: Verteilter, koh\"arenter Cache f\"ur Metadaten %agiert
+		\item ceph-mon: Monitor, Cluster Management, Konfiguration und Zugangspunkt f\"ur CephFS
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Object Storage Daemon}
+	\begin{itemize}
+		\item Mehrere OSDs pro Host m\"oglich
+		\item Hardware:
+		\begin{itemize}
+			\item Viele Festplatten 
+			\item Viel Ram (besseres Caching) (min. 500MB/Daemon)
+			\item Schnelles Netzwerk
+		\end{itemize}
+		\item Anzahl:
+		\begin{itemize}
+			\item Mindestens 2, so viele wie m\"oglich
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Metadaten Daemon}
+	\begin{itemize}
+
+		\item Hardware:
+		\begin{itemize}
+			\item Sehr viel Ram
+			\item Schnelle CPU
+			\item Schnelles Netzwerk (geringe Verz\"ogerung)
+		\end{itemize}
+		\item Anzahl: 
+		\begin{itemize}
+			\item Mindestens 1
+			\item 2 oder mehr f\"ur Redundanz und Load Balancing
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Monitor Daemon}
+	\begin{itemize}
+		\item Hardware:
+		\begin{itemize}
+			\item Einige GB Festplattenspeicher
+			\item Feste IP
+		\end{itemize}
+		\item Anzahl:
+		\begin{itemize}
+			\item Ungerade Anzahl!
+			\item 1 ist ok
+			\item 3 ideal f\"ur die meisten Anwendungsf\"alle
+			\item Mehr nur f\"ur sehr große Cluster
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Beispiel ceph.conf}
 
 \begin{lstlisting}
 ;This is a comment
@@ -437,13 +498,38 @@
 
 
 \begin{frame}{Zugriff}
+	\begin{itemize}
+		\item Kerneltreiber
+		\item FUSE
+		\item librados
+		\item Rados Gateway (RESTful interface)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Probleme (CephFS)}
+    \begin{itemize}
+        \item Crash bei mount mit dem Kernel Treiber auf OSD-Server.
+        \item Performance beim Kopieren von vielen Dateien noch gering.
+    \end{itemize}
+    \alert{Jedoch:} Selbstheilung sehr gut.
+    %nur bei extremen Ausfaellen und Netz-beintraechtigung ging der Cluster in die Knie (degraded).
+    %Nur einmal bei so einem Test gab es permanenten Datenverlust und wir mussten den cluster neu formatieren.
+\end{frame}
+
+
+\begin{frame}{Zusammenfassung}
+\begin{itemize}
+	\item Sehr vielversprechend
+	\item Einiges unvollst\"andig implementiert 
+	\item $\Rightarrow$ Warten auf stable
+\end{itemize}
 \end{frame}
 
 \section{Fragen}
 \subsection*{}
 \begin{frame}
 	\begin{center}
-	\large Fragen?
+	\large Fragen? Anregungen? Vorschl\"age? Rants?
 	\end{center}
 	
 	\begin{center}
